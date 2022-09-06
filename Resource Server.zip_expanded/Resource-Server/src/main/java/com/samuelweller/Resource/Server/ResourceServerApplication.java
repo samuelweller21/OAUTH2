@@ -6,7 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
+//Start Docker
 //docker run --detach --env MYSQL_ROOT_PASSWORD=sweller --env MYSQL_USER=sweller --env MYSQL_PASSWORD=sweller --env MYSQL_DATABASE=test --name mysql --publish 3306:3306 mysql:5.7
+//mysqlsh
+//\connect root@localhost:3306
+//\sql
 //GRANT ALL PRIVILEGES ON *.* TO 'sweller'@'localhost';
 //FLUSH PRIVILEGES;
 
