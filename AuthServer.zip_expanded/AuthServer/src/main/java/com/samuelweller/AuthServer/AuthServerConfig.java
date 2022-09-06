@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -44,7 +45,10 @@ public class AuthServerConfig {
 				.redirectUri("http://127.0.0.1:8080/login/oauth2/code/users-client-oidc")
 				.redirectUri("http://127.0.0.1:8080/authorized")
 				.scope(OidcScopes.OPENID)
-				//.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+				.clientSettings(ClientSettings.builder()
+				        .requireAuthorizationConsent(false)
+				        .requireProofKey(true)
+				        .build())
 				.build();
 		
 		return new InMemoryRegisteredClientRepository(registeredClient);
