@@ -1,9 +1,13 @@
 package com.samuelweller.AuthServer;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +23,11 @@ import org.springframework.security.oauth2.server.authorization.JwtEncodingConte
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenCustomizer;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+
 
 @EnableWebSecurity
 public class SpringSecurityConfig {
@@ -26,13 +35,35 @@ public class SpringSecurityConfig {
 	@Bean
 	SecurityFilterChain configureSecurityFilterChain(HttpSecurity http) throws Exception {
 
-		// All requests must be authenticated using form login
-		http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
-				.formLogin(Customizer.withDefaults());
+		http
+		
+		//Allow options requests
+		
+		.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+		
+		// All other requests must be authenticated using form login
+		.anyRequest().authenticated().and().formLogin(Customizer.withDefaults());
 
 		return http.build();
 	}
-
+	
+	 @Bean
+		@Order(Ordered.HIGHEST_PRECEDENCE)
+	    CorsConfigurationSource corsConfigurationSource() {
+	        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	        CorsConfiguration corsConfiguration = new CorsConfiguration();
+	        corsConfiguration.addAllowedOrigin("http://127.0.0.1:3000");
+	        corsConfiguration.setAllowedMethods(Arrays.asList(
+	                HttpMethod.GET.name(),
+	                HttpMethod.HEAD.name(),
+	                HttpMethod.POST.name(),
+	                HttpMethod.PUT.name(),
+	                HttpMethod.DELETE.name()));
+	        corsConfiguration.setMaxAge(1800L);
+	        source.registerCorsConfiguration("/**", corsConfiguration); // you restrict your path here
+	        return source;
+	    }
+	
 	@Bean
 	OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
 		return context -> {
@@ -46,6 +77,8 @@ public class SpringSecurityConfig {
 
 		};
 	}
+	
+	
 
 	@Bean
 	public UserDetailsService users() {

@@ -5,6 +5,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,9 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -42,8 +46,9 @@ public class AuthServerConfig {
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-				.redirectUri("http://127.0.0.1:8080/login/oauth2/code/users-client-oidc")
-				.redirectUri("http://127.0.0.1:8080/authorized")
+//				.redirectUri("http://127.0.0.1:8080/login/oauth2/code/users-client-oidc")
+				.redirectUri("http://127.0.0.1:3000/authorized")
+//				.redirectUri("http://127.0.0.1:3000/authorized")
 				.scope(OidcScopes.OPENID)
 				.clientSettings(ClientSettings.builder()
 				        .requireAuthorizationConsent(false)
@@ -55,11 +60,10 @@ public class AuthServerConfig {
 	}
 	
 	@Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
-        return http.formLogin(Customizer.withDefaults()).build();
+        return http.cors().and().formLogin(Customizer.withDefaults()).build();
     }
     
     
